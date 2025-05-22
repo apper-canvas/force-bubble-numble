@@ -19,6 +19,12 @@ const MIN_VERTICAL_DISTANCE = 100;
 // Minimum horizontal distance between bubbles
 const MIN_HORIZONTAL_DISTANCE = 80;
 
+
+// Minimum vertical distance between bubbles
+const MIN_VERTICAL_DISTANCE = 100;
+// Minimum horizontal distance between bubbles
+const MIN_HORIZONTAL_DISTANCE = 80;
+
 const MainFeature = ({ onBack }) => {
   // Game state
   const [gameActive, setGameActive] = useState(false)
@@ -157,12 +163,16 @@ const MainFeature = ({ onBack }) => {
   
   // Check if a new bubble position is safe (not overlapping other bubbles)
   const isSafePosition = (x, y, radius) => {
-    return bubbles.every(bubble => {
+    // Check against all existing bubbles
+    const isSafe = bubbles.every(bubble => {
       const dx = bubble.x - x;
       const dy = bubble.y - y;
       const distance = Math.sqrt(dx * dx + dy * dy);
+      // Ensure both horizontal and vertical minimum distances are respected
       return distance > (bubble.radius + radius + MIN_HORIZONTAL_DISTANCE);
     });
+    
+    return isSafe;
   };
   
   // Find a safe position for a new bubble
@@ -180,7 +190,13 @@ const MainFeature = ({ onBack }) => {
     const containerRect = gameContainer.getBoundingClientRect();
     
     // Try to find a safe position, with a maximum number of attempts
-    do {
+    
+      x = Math.random() * (width - 2 * padding) + padding;
+      // Position at the bottom of the container
+      y = height + Math.random() * 50; 
+      attempts++;
+    } while (!isSafePosition(x, y, radius) && attempts < 20);
+    // Try to find a safe position, with a maximum number of attempts
       x = Math.random() * (width - 2 * padding) + padding;
       // Position at the bottom of the container
       y = height + Math.random() * 50; 
