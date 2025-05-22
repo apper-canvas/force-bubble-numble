@@ -95,8 +95,12 @@ const MainFeature = ({ onBack }) => {
   useEffect(() => {
     let animationFrame;
     const settings = difficultySettings[difficulty];
+    const gameContainer = gameContainerRef.current;
+    
+    if (!gameContainer) return () => cancelAnimationFrame(animationFrame);
     
     const moveBubbles = () => {
+      const { height } = gameContainer.getBoundingClientRect();
       if (gameActive && !paused && !gameOver) {
         setBubbles(prevBubbles => {
           return prevBubbles
@@ -105,7 +109,7 @@ const MainFeature = ({ onBack }) => {
               const newY = bubble.y - bubble.speed * settings.bubbleSpeed;
               
               // If bubble has gone off screen, remove it
-              if (newY < -100) {
+              if (newY < -bubble.radius * 2) {
                 return null;
               }
               
@@ -128,6 +132,18 @@ const MainFeature = ({ onBack }) => {
     return () => cancelAnimationFrame(animationFrame);
   }, [gameActive, paused, gameOver, difficulty]);
   
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      // Recalculate bubble positions if needed
+      if (gameActive && !paused && !gameOver) {
+        // This will force bubbles to adjust to new container size
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [gameActive, paused, gameOver]);
+  
   // Check if a new bubble position is safe (not overlapping other bubbles)
   const isSafePosition = (x, y, radius) => {
     return bubbles.every(bubble => {
@@ -143,16 +159,20 @@ const MainFeature = ({ onBack }) => {
     const gameContainer = gameContainerRef.current;
     if (!gameContainer) return { x: 0, y: 0 };
     
-    const { width } = gameContainer.getBoundingClientRect();
+    const { width, height } = gameContainer.getBoundingClientRect();
     const padding = radius + 10; // Add padding to avoid bubbles touching the edges
     
     let attempts = 0;
     let x, y;
     
+    // Get the container's position
+    const containerRect = gameContainer.getBoundingClientRect();
+    
     // Try to find a safe position, with a maximum number of attempts
     do {
       x = Math.random() * (width - 2 * padding) + padding;
-      y = window.innerHeight + Math.random() * 100; // Start below the screen with some randomness
+      // Position at the bottom of the container plus some randomness
+      y = height + Math.random() * 50; 
       attempts++;
     } while (!isSafePosition(x, y, radius) && attempts < 20);
     
@@ -168,6 +188,7 @@ const MainFeature = ({ onBack }) => {
     const radius = Math.floor(Math.random() * 15) + 30; // Size between 30-45px
     const number = Math.floor(Math.random() * 100) + 1; // Number between 1-100
     const isEven = number % 2 === 0;
+    const { height } = gameContainer.getBoundingClientRect();
     
     // Random bubble color based on whether the number is odd or even
     // Use pastel colors that are visually distinct
@@ -178,7 +199,10 @@ const MainFeature = ({ onBack }) => {
     const color = colors[Math.floor(Math.random() * colors.length)];
     
     // Get a safe position for the bubble
-    const { x, y } = findSafePosition(radius);
+    let { x, y } = findSafePosition(radius);
+    
+    // Ensure y is at the bottom of the container
+    y = Math.max(y, height);
     
     // Calculate a random speed for the bubble
     const baseSpeed = 0.5;
@@ -394,8 +418,9 @@ const MainFeature = ({ onBack }) => {
             className="bubble"
             style={{
               left: `${bubble.x}px`,
-              top: `${bubble.y}px`,
+              bottom: `calc(100% - ${bubble.y}px)`,
               width: `${bubble.radius * 2}px`,
+              height: `${bubble.radius * 2}px`,
               height: `${bubble.radius * 2}px`,
               backgroundColor: bubble.color,
               fontSize: `${bubble.radius * 0.8}px`,
