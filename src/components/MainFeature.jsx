@@ -77,15 +77,20 @@ const MainFeature = ({ onBack }) => {
   // Bubble spawner
   useEffect(() => {
     let spawnTimer;
-    
+    let replenishTimer;
+
     if (gameActive && !paused && !gameOver) {
       const settings = difficultySettings[difficulty];
       
       spawnTimer = setInterval(() => {
         if (bubbles.length < settings.maxBubbles) {
-          spawnBubble();
+          // Spawn multiple bubbles if we're significantly below the max
+          const bubblesToCreate = Math.min(3, settings.maxBubbles - bubbles.length);
+          for (let i = 0; i < bubblesToCreate; i++) {
+            setTimeout(() => spawnBubble(), i * 100);
+          }
         }
-      }, settings.spawnRate);
+      }, settings.spawnRate / 2);
     }
     
     return () => clearInterval(spawnTimer);
@@ -110,6 +115,12 @@ const MainFeature = ({ onBack }) => {
               
               // If bubble has gone off screen, remove it
               if (newY < -bubble.radius * 2) {
+                // Spawn a new bubble when one leaves the screen
+                setTimeout(() => {
+                  if (gameActive && !paused && !gameOver) {
+                    spawnBubble();
+                  }
+                }, Math.random() * 300);
                 return null;
               }
               
@@ -224,6 +235,19 @@ const MainFeature = ({ onBack }) => {
     setBubbles(prev => [...prev, newBubble]);
   };
   
+  // Replenish bubbles to maintain the desired number on screen
+  const replenishBubbles = () => {
+    if (!gameActive || paused || gameOver) return;
+    
+    const settings = difficultySettings[difficulty];
+    const currentCount = bubbles.length;
+    
+    if (currentCount < settings.maxBubbles) {
+      // Add a slight delay for natural appearance
+      setTimeout(spawnBubble, Math.random() * 200 + 100);
+    }
+  };
+  
   // Handle bubble click
   const handleBubblePop = (bubble) => {
     if (paused) return;
@@ -239,6 +263,9 @@ const MainFeature = ({ onBack }) => {
       
       // Show animation and remove bubble
       setBubbles(prev => prev.filter(b => b.id !== bubble.id));
+      
+      // Replenish bubbles
+      replenishBubbles();
       
       // Show toast for points
       toast.success('+10 Points!', {
@@ -263,6 +290,9 @@ const MainFeature = ({ onBack }) => {
       
       // Show animation and remove bubble
       setBubbles(prev => prev.filter(b => b.id !== bubble.id));
+      
+      // Replenish bubbles
+      replenishBubbles();
       
       // Show toast for wrong choice
       toast.error('Oops! Wrong choice!', {
@@ -301,14 +331,29 @@ const MainFeature = ({ onBack }) => {
     const initialBubbleCount = Math.floor(settings.maxBubbles / 2);
     
     // Clear existing bubbles
-    setBubbles([]);
+    setBubbles([]); 
     
-    // Create initial set of bubbles
-    const initialBubbles = [];
+    // Create initial set of bubbles with staggered timing
     for (let i = 0; i < initialBubbleCount; i++) {
       setTimeout(() => {
-        spawnBubble();
-      }, i * 100); // Stagger bubble creation for a natural appearance
+        if (gameActive && !paused && !gameOver) {
+          spawnBubble();
+        }
+      }, i * 150); // Stagger bubble creation for a natural appearance
+    }
+    
+    // Ensure we continue spawning bubbles to reach max
+    if (initialBubbleCount < settings.maxBubbles) {
+      setTimeout(() => {
+        const remainingBubbles = settings.maxBubbles - initialBubbleCount;
+        for (let i = 0; i < remainingBubbles; i++) {
+          setTimeout(() => {
+            if (gameActive && !paused && !gameOver) {
+              spawnBubble();
+            }
+          }, i * 300 + 1000); // Add more bubbles after a slight delay
+        }
+      }, initialBubbleCount * 150);
     }
   };
   
