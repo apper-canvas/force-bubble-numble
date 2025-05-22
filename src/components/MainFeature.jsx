@@ -247,10 +247,27 @@ const MainFeature = ({ onBack }) => {
       setTimeout(spawnBubble, Math.random() * 200 + 100);
     }
   };
+
+  // Check if a bubble is within the game container bounds
+  const isBubbleInContainer = (bubble) => {
+    const gameContainer = gameContainerRef.current;
+    if (!gameContainer) return false;
+    
+    const { left, top, right, bottom } = gameContainer.getBoundingClientRect();
+    
+    // Calculate bubble's center position
+    const bubbleLeft = bubble.x - bubble.radius;
+    const bubbleRight = bubble.x + bubble.radius;
+    const bubbleTop = bubble.y - bubble.radius;
+    const bubbleBottom = bubble.y + bubble.radius;
+    
+    // Check if bubble is fully or partially within container
+    return bubbleRight >= left && bubbleLeft <= right && bubbleBottom >= top && bubbleTop <= bottom;
+  };
   
   // Handle bubble click
   const handleBubblePop = (bubble) => {
-    if (paused) return;
+    if (paused || !isBubbleInContainer(bubble)) return;
     
     // Check if the bubble matches the current game mode
     const isCorrect = 
