@@ -39,7 +39,7 @@
 @layer components {
   .bubble {
     @apply absolute rounded-full flex items-center justify-center shadow-bubble cursor-pointer select-none
-           text-white font-bold text-lg transform z-20 
+           text-surface-900 font-bold text-lg transform z-20 
            hover:scale-110 active:scale-90;
     position: absolute !important;
     display: flex !important;
@@ -55,7 +55,7 @@
     visibility: visible !important;
     pointer-events: auto !important;
     border: 2px solid rgba(255,255,255,0.3);
-    color: white !important;
+    color: #0f172a !important;
     font-weight: bold !important;
     will-change: transform, top;
     user-select: none;
