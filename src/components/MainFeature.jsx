@@ -158,7 +158,7 @@ const MainFeature = ({ onBack }) => {
   const findSafePosition = (radius) => {
     const gameContainer = gameContainerRef.current;
     if (!gameContainer) return { x: 0, y: 0 };
-    
+
     const { width, height } = gameContainer.getBoundingClientRect();
     const padding = radius + 10; // Add padding to avoid bubbles touching the edges
     
@@ -171,7 +171,7 @@ const MainFeature = ({ onBack }) => {
     // Try to find a safe position, with a maximum number of attempts
     do {
       x = Math.random() * (width - 2 * padding) + padding;
-      // Position at the bottom of the container plus some randomness
+      // Position at the bottom of the container
       y = height + Math.random() * 50; 
       attempts++;
     } while (!isSafePosition(x, y, radius) && attempts < 20);
@@ -193,7 +193,7 @@ const MainFeature = ({ onBack }) => {
     // Random bubble color based on whether the number is odd or even
     // Use pastel colors that are visually distinct
     const colors = isEven 
-      ? ['#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7'] // Colors for even numbers
+      ? ['#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7'] // Colors for even numbers 
       : ['#C7CEEA', '#B5D8EB', '#9FB7E0', '#D3BBF2', '#A0C4FF']; // Colors for odd numbers
     
     const color = colors[Math.floor(Math.random() * colors.length)];
@@ -332,7 +332,7 @@ const MainFeature = ({ onBack }) => {
       {/* Game Area */}
       <div 
         ref={gameContainerRef}
-        className="min-h-screen relative overflow-hidden bg-gradient-to-br from-blue-50 to-purple-50 dark:from-surface-900 dark:to-surface-800"
+        className="min-h-screen relative overflow-hidden bg-gradient-to-br from-blue-50 to-purple-50 dark:from-surface-900 dark:to-surface-800 flex items-center justify-center"
       >
         {/* Game header with controls */}
         <div className="absolute top-0 left-0 right-0 z-10 p-4 bg-white/80 dark:bg-surface-800/80 backdrop-blur-sm flex items-center justify-between">
@@ -418,12 +418,11 @@ const MainFeature = ({ onBack }) => {
             className="bubble"
             style={{
               left: `${bubble.x}px`,
-              bottom: `calc(100% - ${bubble.y}px)`,
+              top: `${bubble.y}px`,
               width: `${bubble.radius * 2}px`,
               height: `${bubble.radius * 2}px`,
-              height: `${bubble.radius * 2}px`,
               backgroundColor: bubble.color,
-              fontSize: `${bubble.radius * 0.8}px`,
+              fontSize: `${bubble.radius * 0.8}px`
             }}
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
