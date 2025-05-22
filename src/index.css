@@ -45,6 +45,7 @@
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    border-radius: 100%;
     transform-origin: center center;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2), 
                 inset 0 -4px 0 rgba(0,0,0,0.1),
@@ -59,6 +60,7 @@
     will-change: transform, top;
     user-select: none;
     z-index: 5;
+    transform-origin: center center;
   }
 
   .game-btn {
@@ -100,12 +102,4 @@
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
   }
-  
-  /* Add a shadow definition for bubbles */
-  border-radius: 100%;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15), 
-                inset 0 -4px 0 rgba(0,0,0,0.1);
-  }
 }
-  z-index: 5;
-  transform-origin: center center;
