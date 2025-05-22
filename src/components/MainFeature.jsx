@@ -280,16 +280,36 @@ const MainFeature = ({ onBack }) => {
   
   // Start the game
   const startGame = () => {
+    // Reset game state
     setGameActive(true);
     setScore(0);
     setLives(3);
     setTimeRemaining(60);
-    setBubbles([]);
     setGameOver(false);
     setPaused(false);
     
     // Randomly choose between odd and even mode
     setGameMode(Math.random() > 0.5 ? 'odd' : 'even');
+    
+    // Initialize with several bubbles immediately
+    initializeBubbles();
+  };
+  
+  // Initialize the game with some bubbles
+  const initializeBubbles = () => {
+    const settings = difficultySettings[difficulty];
+    const initialBubbleCount = Math.floor(settings.maxBubbles / 2);
+    
+    // Clear existing bubbles
+    setBubbles([]);
+    
+    // Create initial set of bubbles
+    const initialBubbles = [];
+    for (let i = 0; i < initialBubbleCount; i++) {
+      setTimeout(() => {
+        spawnBubble();
+      }, i * 100); // Stagger bubble creation for a natural appearance
+    }
   };
   
   // End the game
@@ -326,6 +346,13 @@ const MainFeature = ({ onBack }) => {
   const handleDifficultyChange = (newDifficulty) => {
     setDifficulty(newDifficulty);
   };
+  
+  // Ensure bubbles appear when game becomes active
+  useEffect(() => {
+    if (gameActive && bubbles.length === 0) {
+      initializeBubbles();
+    }
+  }, [gameActive]);
   
   return (
     <div className="min-h-screen relative overflow-hidden">

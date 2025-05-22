@@ -39,17 +39,23 @@
 @layer components {
   .bubble {
     @apply absolute rounded-full flex items-center justify-center shadow-bubble cursor-pointer select-none
-           text-white font-bold text-lg transform z-20
+           text-white font-bold text-lg transform z-20 
            hover:scale-110 active:scale-90;
-    position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: absolute !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     transform-origin: center center;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2), 
                 inset 0 -4px 0 rgba(0,0,0,0.1),
                 inset 0 2px 0 rgba(255,255,255,0.2);
     transition: transform 0.2s ease-out;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    border: 2px solid rgba(255,255,255,0.3);
+    color: white !important;
+    font-weight: bold !important;
     will-change: transform, top;
     user-select: none;
     z-index: 5;
