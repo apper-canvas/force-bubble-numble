@@ -20,11 +20,6 @@ const MIN_VERTICAL_DISTANCE = 100;
 const MIN_HORIZONTAL_DISTANCE = 80;
 
 
-// Minimum vertical distance between bubbles
-const MIN_VERTICAL_DISTANCE = 100;
-// Minimum horizontal distance between bubbles
-const MIN_HORIZONTAL_DISTANCE = 80;
-
 const MainFeature = ({ onBack }) => {
   // Game state
   const [gameActive, setGameActive] = useState(false)
@@ -190,13 +185,7 @@ const MainFeature = ({ onBack }) => {
     const containerRect = gameContainer.getBoundingClientRect();
     
     // Try to find a safe position, with a maximum number of attempts
-    
-      x = Math.random() * (width - 2 * padding) + padding;
-      // Position at the bottom of the container
-      y = height + Math.random() * 50; 
-      attempts++;
-    } while (!isSafePosition(x, y, radius) && attempts < 20);
-    // Try to find a safe position, with a maximum number of attempts
+    do {
       x = Math.random() * (width - 2 * padding) + padding;
       // Position at the bottom of the container
       y = height + Math.random() * 50; 
